@@ -1,0 +1,17 @@
+{% extends "base.html.twig" %}
+{% block title %}Book gallery{% endblock %}
+{% block body %}
+    {{ parent() }}
+	{% for book in bookList %}
+		<div>
+			<div>
+				<p>
+					<span>{{ book.name }}<span> by <span>{{ book.author}}</span>
+				</p>
+				<div>
+					<img src="{{ book.cover }}" />
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+{% endblock %}

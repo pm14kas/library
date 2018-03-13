@@ -1,0 +1,18 @@
+{% extends "base.html.twig" %}
+{% block title %}Book gallery{% endblock %}
+{% block body %}
+    {{ parent() }}
+	<form method="post" action="{{ path("api_book_create") }}">
+		<p>Book title</p>
+		<input name="name" /><br>
+		<p>Author</p>
+		<input name="author" /><br>
+		<p>Picture of book cover</p>
+		<input type="file" name="cover" /><br>
+		<p>Book file (leave blank if not available)</p>
+		<input type="file" name="file" /><br>
+		<p>Completion date (leave blank if not available)</p>
+		<input type="date" name="readAt" /><br>
+		<input type="submit" name="Send" />
+	</form>
+{% endblock %}

@@ -1,7 +1,3 @@
-app_lucky_number:
-    path: /lucky/number
-    controller: App\Controller\LuckyController::number
-
 fos_user_security:
     resource: "@FOSUserBundle/Resources/config/routing/security.xml"
 
@@ -20,3 +16,26 @@ fos_user_resetting:
 fos_user_change_password:
     resource: "@FOSUserBundle/Resources/config/routing/change_password.xml"
     prefix: /profile
+
+index:
+    path: /
+    controller: App\Controller\PageController::index
+
+gallery:
+    path: /gallery
+    controller: App\Controller\PageController::gallery
+
+
+api_book_create:
+    path: /api/v1/books/add
+    controller: App\Controller\BookController::addBook
+
+api_book_edit:
+    path: /api/v1/books/{id}/edit
+    controller: App\Controller\BookController::editBook
+    requirements:
+        id: '\d+'
+
+api_books_get:
+    path: /api/v1/books
+    controller: App\Controller\BookController::getBookS
