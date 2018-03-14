@@ -23,11 +23,11 @@ class Book
     /** @ORM\Column(type="string", length=255) */
 	private $author;
 
-    /** @ORM\Column(type="string", length=255) */
-	private $cover;
+    /** @ORM\Column(type="string", nullable=true, length=255) */
+	private $cover = null;
 
-    /** @ORM\Column(type="string", length=255) */
-	private $link;
+    /** @ORM\Column(type="string", nullable=true, length=255) */
+	private $link = null;
 
 	/** @ORM\Column(type="datetime") */
 	private $read_at;
