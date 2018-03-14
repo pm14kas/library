@@ -1,0 +1,7 @@
+Api:
+https://medium.com/@_Ma27_/authenticate-users-with-api-keys-using-symfony-and-doctrine-b2270752261a
+https://symfony.com/doc/current/security/api_key_authentication.html
+
+File:
+http://symfony.com/doc/current/controller/upload_file.html
+https://stackoverflow.com/questions/43033416/how-to-know-uploaded-file-size-on-symfony-3

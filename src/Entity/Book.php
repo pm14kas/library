@@ -55,6 +55,20 @@ class Book
 		    $this->setCreatedAt(new \DateTime('now'));
 		}
 	}
+	
+	/** 
+	* @ORM\PreRemove
+	*/
+	public function deleteFiles()
+	{
+		if ($this->getCover() == null) {
+		    unlink $this->getCover();
+		}
+		
+		if ($this->getLink() == null) {
+		    unlink $this->getLink();
+		}
+	}
 
 	public function getId()
 	{

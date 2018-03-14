@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 use JMS\Serializer;
@@ -44,10 +46,30 @@ class BookController
 			$book->setAuthor($request->input("author"));
 			$book->setReadAt($request->input("read_at"));
 			
-			if (!$request->files->get("cover")) {
+			if (!$request->files->get("cover") or !$request->file("localFile")->isValid()) {
 				$book->setCover(null);
 			}
-			else {
+			else {	
+				$file = $request->file->input("cover");
+				if ($file->
+				$ext = $file->getClientOriginalExtension();
+				$mime = $file->getMimeType();
+				$name = time().substr(microtime(), 2, 3);
+				
+				$typeok = TRUE;
+				switch($mime)
+				{
+					case "image/gif":
+					case "image/jpeg": 
+					case "image/pjpeg":
+					case "image/png": break;
+					default: $typeok = FALSE; break;
+				}
+				if ($typeok)
+				{
+					$file->move($this->makePath()."images/upload/", $name.".".$ext);
+					return json_encode(["response"=>"ok", "code"=>"200", "message" => "Success", "url" => url("/")."/images/upload/".$name.".".$ext]);
+				}
                 //upload image, check if it is valid, rename to current_timestamp
 				//then put global link to db like "http://mysite/uploads/covers/156727378992000.jpg"
 				//docs on symfony upload http://symfony.com/doc/current/controller/upload_file.html

@@ -18,10 +18,24 @@ class User extends BaseUser
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+	
+	/** @ORM\Column(type="api_key", length=255) */
+	private $api_key;
+
 
     public function __construct()
     {
         parent::__construct();
         // your own logic
     }
+	
+	public function getApiKey()
+	{
+		return $this->api_key;
+	}
+	
+	public function setApiKey($_api_key)
+	{
+		$this->api_key = $_api_key;
+	}
 }

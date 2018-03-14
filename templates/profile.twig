@@ -1,0 +1,12 @@
+{% extends "base.html.twig" %}
+{% block title %}Book gallery{% endblock %}
+{% block body %}
+    {{ parent() }}
+	<p>Пароль</p>
+	<input type="password" name="passwordChange"/><br>
+	<p>Подтверждение пароля</p>
+	<input type="password" name="passwordConfirm"/><br>
+	
+	<p>Ключ для доступа к API</p>
+	<input name="apiKey"/><br>
+{% endblock %}
