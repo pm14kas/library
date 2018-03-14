@@ -20,5 +20,13 @@ class PageController extends Controller
 		return $this->render('gallery.html.twig', ["bookList" => $bookList]);
 	}
 	
-
+	public function bookCreatePage()
+	{
+		
+	}
+	
+	public function bookCreateHandler()
+	{
+		
+	}
 }

@@ -28,17 +28,17 @@ gallery:
 
 api_book_create:
     path: /api/v1/books/add
-    controller: App\Controller\BookController::addBook
+    controller: App\Controller\BookController::apiAddBook
     methods: [POST]
 
 api_book_edit:
     path: /api/v1/books/{id}/edit
-    controller: App\Controller\BookController::editBook
+    controller: App\Controller\BookController::apiEditBook
     requirements:
         id: '\d+'
     methods: [POST]
 
 api_books_get:
     path: /api/v1/books
-    controller: App\Controller\BookController::getBooks
+    controller: App\Controller\BookController::apiGetBooks
     methods: [GET]
