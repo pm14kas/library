@@ -10,8 +10,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 
-use JMS\Serializer;
-use JMS\Serializer\SerializerBuilder;
+use \JMS\Serializer\SerializerBuilder;
 
 use App\Entity\Book;
 
@@ -119,21 +118,21 @@ class BookController extends Controller
 	
 	public function apiGetBooks(Request $request)
 	{
-        $serializer = JMS\Serializer\SerializerBuilder::create()->build();
+        $serializer = SerializerBuilder::create()->build();
         try
         {	
             if (!$request->get("api_key")) {
-                throw new Exception("No API key provided");
+                throw new AccessDeniedException("No API key provided");
 			}
-            else if ($request->get("api_key")!=env("API_KEY")) {
-                throw new Exception("Wrong API key");
+            else if ($request->get("api_key")!=$this->getParameter('api_key')) {
+                throw new AccessDeniedException("Wrong API key");
             }
             
             $bookList = $this->getDoctrine()->getRepository(Book::class)->findAll();
             $json = $serializer->serialize($bookList, "json");
             return new Response($json);
         }
-        catch(Exception $e)
+        catch(AccessDeniedException $e)
 		{
 			$json = $serializer->serialize(["result" => "fail", "message" => $e->getMessage()], "json");
 			return new Response($json);
@@ -142,27 +141,27 @@ class BookController extends Controller
 
     public function apiEditBook($id, Request $request)
     {
-		$serializer = JMS\Serializer\SerializerBuilder::create()->build();
+		$serializer = SerializerBuilder::create()->build();
 		try
 		{	
             if (!$request->get("api_key")) {
-                throw new Exception("No API key provided");
+                throw new AccessDeniedException("No API key provided");
 			}
-            else if ($request->get("api_key")!=env("API_KEY")) {
-                throw new Exception("Wrong API key");
+            else if ($request->get("api_key")!=$this->getParameter('api_key')) {
+                throw new AccessDeniedException("Wrong API key");
             }
             
 			if (!$request->get("name")) {
-                throw new Exception("No name provided");
+                throw new AccessDeniedException("No name provided");
 			}
 			if (!$request->get("author")) {
-                throw new Exception("No author's name provided");
+                throw new AccessDeniedException("No author's name provided");
 			}
 			if (!$request->get("read_at")) {
-                throw new Exception("No completion date provided");
+                throw new AccessDeniedException("No completion date provided");
 			}
 			if (!$request->get("api_key")) {
-                throw new Exception("No API key provided");
+                throw new AccessDeniedException("No API key provided");
 			}
             
 
@@ -170,7 +169,7 @@ class BookController extends Controller
 			
 			$book = $this->getDoctrine()->getRepository(Book::class)->find($id);
 			if (!book) {
-                throw new Exception("Invalid book ID");
+                throw new AccessDeniedException("Invalid book ID");
 			}
 			$book->setName($request->get("name"));
 			$book->setAuthor($request->get("author"));
@@ -183,7 +182,7 @@ class BookController extends Controller
 			$json = $serializer->serialize(["result" => "ok", "message" => $book->getId()], "json");
 			return new Response($json);
 		}
-		catch(Exception $e)
+		catch(AccessDeniedException $e)
 		{
 			$json = $serializer->serialize(["result" => "fail", "message" => $e->getMessage()], "json");
 			return new Response($json);
@@ -192,24 +191,24 @@ class BookController extends Controller
 
 	public function apiAddBook(Request $request)
 	{
-		$serializer = JMS\Serializer\SerializerBuilder::create()->build();
+		$serializer = SerializerBuilder::create()->build();
 		try
 		{	
             if (!$request->get("api_key")) {
-                throw new Exception("No API key provided");
+                throw new AccessDeniedException("No API key provided");
 			}
-            else if ($request->get("api_key")!=env("API_KEY")) {
-                throw new Exception("Wrong API key");
+            else if ($request->get("api_key")!=$this->getParameter('api_key')) {
+                throw new AccessDeniedException("Wrong API key");
             }
             
 			if (!$request->get("name")) {
-                throw new Exception("No name provided");
+                throw new AccessDeniedException("No name provided");
 			}
 			if (!$request->get("author")) {
-                throw new Exception("No author's name provided");
+                throw new AccessDeniedException("No author's name provided");
 			}
 			if (!$request->get("read_at")) {
-                throw new Exception("No completion date provided");
+                throw new AccessDeniedException("No completion date provided");
 			}
 
 
@@ -227,7 +226,7 @@ class BookController extends Controller
 			$json = $serializer->serialize(["result" => "ok", "message" => $book->getId()], "json");
 			return new Response($json);
 		}
-		catch(Exception $e)
+		catch(AccessDeniedException $e)
 		{
 			$json = $serializer->serialize(["result" => "fail", "message" => $e->getMessage()], "json");
 			return new Response($json);

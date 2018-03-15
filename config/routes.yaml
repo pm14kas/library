@@ -39,14 +39,14 @@ book_edit_handler:
     
 api_book_create:
     path: /api/v1/books/add
-    controller: App\Controller\BookController::addBook
+    controller: App\Controller\BookController::apiAddBook
 
 api_book_edit:
     path: /api/v1/books/{id}/edit
-    controller: App\Controller\BookController::editBook
+    controller: App\Controller\BookController::apiEditBook
     requirements:
         id: '\d+'
 
 api_books_get:
     path: /api/v1/books
-    controller: App\Controller\BookController::getBookS
+    controller: App\Controller\BookController::apiGetBooks
