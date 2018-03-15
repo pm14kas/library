@@ -5,5 +5,11 @@
 <a href="{{ path('fos_user_security_login') }}">Login</a>
 <a href="{{ path('fos_user_registration_register') }}">Register</a>
 
-You are currently logged in as {{user}}
+{% if (user) %}
+	<p>You are currently logged in as {{user}}</p>
+{% else %}
+	<br>
+{% endif %}
+
+<a href="{{ path('gallery') }}">Go to library</a>
 {% endblock %}

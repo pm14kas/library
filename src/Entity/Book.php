@@ -40,7 +40,7 @@ class Book
 
 	function __construct()
 	{
-		$this>setCreatedAt(new \DateTime());
+		$this->setCreatedAt(new \DateTime());
 	}
 
 	/** 
@@ -52,7 +52,7 @@ class Book
 		$this->setUpdatedAt(new \DateTime('now'));
 
 		if ($this->getCreatedAt() == null) {
-		    $this->setCreatedAt(new \DateTime('now'));
+            $this->setCreatedAt(new \DateTime('now'));
 		}
 	}
 	
@@ -61,18 +61,18 @@ class Book
 	*/
 	public function deleteFiles()
 	{
-		if ($this->getCover() == null) {
-		    unlink $this->getCover();
+        if ($this->getCover() == null) {
+		    unlink($this->getCover());
 		}
 		
 		if ($this->getLink() == null) {
-		    unlink $this->getLink();
+		    unlink($this->getLink());
 		}
 	}
 
 	public function getId()
 	{
-		return $id;
+		return $this->id;
 	}	
 
 	public function setId($_id)
@@ -83,7 +83,7 @@ class Book
 
 	public function getName()
 	{
-		return $name;
+		return $this->name;
 	}	
 
 	public function setName($_name)
@@ -94,7 +94,7 @@ class Book
 
 	public function getAuthor()
 	{
-		return $author;
+		return $this->author;
 	}	
 
 	public function setAuthor($_author)
@@ -105,7 +105,7 @@ class Book
 
 	public function getCover()
 	{
-		return $cover;
+		return $this->cover;
 	}	
 
 	public function setCover($_cover)
@@ -116,18 +116,29 @@ class Book
 
 	public function getLink()
 	{
-		return $link;
+		return $this->link;
 	}	
 
 	public function setLink($_link)
 	{
 		$this->link = $_link;
 	}	
+    
+    
+	public function getReadAt()
+	{
+		return $this->read_at;
+	}	
 
+	public function setReadAt($_read_at)
+	{
+		$this->read_at = $_read_at;
+	}
+    
 
 	public function getCreatedAt()
 	{
-		return $created_at;
+		return $this->created_at;
 	}	
 
 	public function setCreatedAt($_created_at)
@@ -138,7 +149,7 @@ class Book
 
 	public function getUpdatedAt()
 	{
-		return $updated_at;
+		return $this->updated_at;
 	}	
 
 	public function setUpdatedAt($_updated_at)

@@ -6,52 +6,61 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Routing\Annotation\Route;
 
 use JMS\Serializer;
+use JMS\Serializer\SerializerBuilder;
 
 use App\Entity\Book;
 
-class BookController
+class BookController extends Controller
 {
 	
 	public function bookHandler(Request $request)
     {
-		$serializer = JMS\Serializer\SerializerBuilder::create()->build();
 		try
 		{	
-			if (!$request->input("name")) {
-				throw new Exception("No name provided");
+			if (!$request->get("name")) {
+				throw new AccessDeniedException("name");
 			}
-			if (!$request->input("author")) {
-				throw new Exception("No author's name provided");
+			if (!$request->get("author")) {
+				throw new AccessDeniedException("author");
 			}
-			if (!$request->input("read_at")) {
-				throw new Exception("No completion date provided");
+			if (!$request->get("read_at")) {
+				throw new AccessDeniedException("read_at");
 			}
 
 			$manager = $this->getDoctrine()->getManager();
 			
-			if (!$request->input("id")) {
+			if (!$request->get("id")) {
 				$book = new Book();
 			}
 			else {
                 $book = $this->getDoctrine()->getRepository(Book::class)->find($id);
 				if (!book) {
-					throw new Exception("Invalid book ID");
+					throw new AccessDeniedException("id");
 				}
 			}
 
-			$book->setName($request->input("name"));
-			$book->setAuthor($request->input("author"));
-			$book->setReadAt($request->input("read_at"));
-			
+			$book->setName($request->get("name"));
+			$book->setAuthor($request->get("author"));
+            
+			$book->setReadAt(\DateTime::createFromFormat("Y-m-d", $request->get("read_at")));
+            if ($book->getReadAt()==false) {
+                $book->setReadAt(\DateTime::createFromFormat("m-d-Y", $request->get("read_at")));
+                if ($book->getReadAt()==false) {
+                    throw new AccessDeniedException("read_at");
+                }
+            }
+			    
 			if (!$request->files->get("cover") or !$request->file("localFile")->isValid()) {
 				$book->setCover(null);
 			}
 			else {	
 				$file = $request->file->input("cover");
-				if ($file->
+				//if ($file->
 				$ext = $file->getClientOriginalExtension();
 				$mime = $file->getMimeType();
 				$name = time().substr(microtime(), 2, 3);
@@ -88,13 +97,11 @@ class BookController
 
 			$manager->flush();
 			
-			$json = $serializer->serialize({"result" => "ok", "message" => $book->getId(), "json");
-			return new Response($json);
+            return $this->redirect($this->generateUrl("gallery"));
 		}
-		catch(Exception $e)
+		catch(AccessDeniedException $e)
 		{
-			$json = $serializer->serialize({"result" => "fail", "message" => e->getMessage(), "json");
-			return new Response($json);
+			return $this-> redirect($this->generateUrl("book_create_page", ["error" => $e->getMessage()]));
 		}
     }
 	
@@ -106,17 +113,31 @@ class BookController
 	
     /**
     *API goes here
-    */
-	
-	
+    */  
+            
 	
 	
 	public function apiGetBooks(Request $request)
 	{
-		$serializer = JMS\Serializer\SerializerBuilder::create()->build();
-		$bookList = $this->getDoctrine()->getRepository(Book::class)->findAll();
-		$json = $serializer->serialize($bookList, "json");
-		return new Response($json);
+        $serializer = JMS\Serializer\SerializerBuilder::create()->build();
+        try
+        {	
+            if (!$request->get("api_key")) {
+                throw new Exception("No API key provided");
+			}
+            else if ($request->get("api_key")!=env("API_KEY")) {
+                throw new Exception("Wrong API key");
+            }
+            
+            $bookList = $this->getDoctrine()->getRepository(Book::class)->findAll();
+            $json = $serializer->serialize($bookList, "json");
+            return new Response($json);
+        }
+        catch(Exception $e)
+		{
+			$json = $serializer->serialize(["result" => "fail", "message" => $e->getMessage()], "json");
+			return new Response($json);
+		}
 	}
 
     public function apiEditBook($id, Request $request)
@@ -124,18 +145,26 @@ class BookController
 		$serializer = JMS\Serializer\SerializerBuilder::create()->build();
 		try
 		{	
-			if (!$request->input("name")) {
-                throw new Exception("No name provided");
-			}
-			if (!$request->input("author")) {
-                throw new Exception("No author's name provided");
-			}
-			if (!$request->input("read_at")) {
-                throw new Exception("No completion date provided");
-			}
-			if (!$request->input("api_key")) {
+            if (!$request->get("api_key")) {
                 throw new Exception("No API key provided");
 			}
+            else if ($request->get("api_key")!=env("API_KEY")) {
+                throw new Exception("Wrong API key");
+            }
+            
+			if (!$request->get("name")) {
+                throw new Exception("No name provided");
+			}
+			if (!$request->get("author")) {
+                throw new Exception("No author's name provided");
+			}
+			if (!$request->get("read_at")) {
+                throw new Exception("No completion date provided");
+			}
+			if (!$request->get("api_key")) {
+                throw new Exception("No API key provided");
+			}
+            
 
 			$manager = $this->getDoctrine()->getManager();
 			
@@ -143,20 +172,20 @@ class BookController
 			if (!book) {
                 throw new Exception("Invalid book ID");
 			}
-			$book->setName($request->input("name"));
-			$book->setAuthor($request->input("author"));
-			$book->setReadAt($request->input("read_at"));
+			$book->setName($request->get("name"));
+			$book->setAuthor($request->get("author"));
+			$book->setReadAt($request->get("read_at"));
 
 			$manager->persist($book);
 
 			$manager->flush();
 			
-			$json = $serializer->serialize({"result" => "ok", "message" => $book->getId(), "json");
+			$json = $serializer->serialize(["result" => "ok", "message" => $book->getId()], "json");
 			return new Response($json);
 		}
 		catch(Exception $e)
 		{
-			$json = $serializer->serialize({"result" => "fail", "message" => e->getMessage(), "json");
+			$json = $serializer->serialize(["result" => "fail", "message" => $e->getMessage()], "json");
 			return new Response($json);
 		}
     }
@@ -166,36 +195,41 @@ class BookController
 		$serializer = JMS\Serializer\SerializerBuilder::create()->build();
 		try
 		{	
-			if (!$request->input("name")) {
-                throw new Exception("No name provided");
-			}
-			if (!$request->input("author")) {
-                throw new Exception("No author's name provided");
-			}
-			if (!$request->input("read_at")) {
-                throw new Exception("No completion date provided");
-			}
-			if (!$request->input("api_key")) {
+            if (!$request->get("api_key")) {
                 throw new Exception("No API key provided");
 			}
+            else if ($request->get("api_key")!=env("API_KEY")) {
+                throw new Exception("Wrong API key");
+            }
+            
+			if (!$request->get("name")) {
+                throw new Exception("No name provided");
+			}
+			if (!$request->get("author")) {
+                throw new Exception("No author's name provided");
+			}
+			if (!$request->get("read_at")) {
+                throw new Exception("No completion date provided");
+			}
+
 
 			$manager = $this->getDoctrine()->getManager();
 			
 			$book = new Book();
-			$book->setName($request->input("name"));
-			$book->setAuthor($request->input("author"));
-			$book->setReadAt($request->input("read_at"));
+			$book->setName($request->get("name"));
+			$book->setAuthor($request->get("author"));
+			$book->setReadAt($request->get("read_at"));
 
 			$manager->persist($book);
 
 			$manager->flush();
 			
-			$json = $serializer->serialize({"result" => "ok", "message" => $book->getId(), "json");
+			$json = $serializer->serialize(["result" => "ok", "message" => $book->getId()], "json");
 			return new Response($json);
 		}
 		catch(Exception $e)
 		{
-			$json = $serializer->serialize({"result" => "fail", "message" => e->getMessage(), "json");
+			$json = $serializer->serialize(["result" => "fail", "message" => $e->getMessage()], "json");
 			return new Response($json);
 		}
 	}

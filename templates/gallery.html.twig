@@ -2,6 +2,10 @@
 {% block title %}Book gallery{% endblock %}
 {% block body %}
     {{ parent() }}
+    {% if (user) %}
+        <a href="{{ path('book_create_page') }}">Add new book</a>
+    {% endif %}
+    
 	{% for book in bookList %}
 		<div>
 			<div>

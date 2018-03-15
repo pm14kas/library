@@ -19,8 +19,8 @@ class User extends BaseUser
      */
     protected $id;
 	
-	/** @ORM\Column(type="api_key", length=255) */
-	private $api_key;
+	/** @ORM\Column(type="string", length=255, nullable=true) */
+	private $api_key=null;
 
 
     public function __construct()

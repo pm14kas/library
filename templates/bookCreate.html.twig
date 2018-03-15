@@ -2,7 +2,14 @@
 {% block title %}Book gallery{% endblock %}
 {% block body %}
     {{ parent() }}
-	<form method="post" action="{{ path("api_book_create") }}">
+	<form method="post" action="{{ path("book_create_handler") }}">
+                {% if ((error is defined) and (error=="name")) %}
+                    <p style="color:red">Book title is missing!</p>
+                {% elseif ((error is defined) and (error=="author")) %}
+                    <p style="color:red">Author is missing!</p>
+                {% elseif ((error is defined) and (error=="read_at")) %}
+                    <p style="color:red">Completion date is wrong or missing!</p>
+                {% endif %}
 		<p>Book title</p>
 		<input name="name" /><br>
 		<p>Author</p>
@@ -12,7 +19,7 @@
 		<p>Book file (leave blank if not available)</p>
 		<input type="file" name="file" /><br>
 		<p>Completion date (leave blank if not available)</p>
-		<input type="date" name="readAt" /><br>
+		<input type="date" name="read_at" /><br>
 		<input type="submit" name="Send" />
 	</form>
 {% endblock %}
