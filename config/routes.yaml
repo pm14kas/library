@@ -22,20 +22,33 @@ index:
     controller: App\Controller\PageController::index
 
 gallery:
-    path: /gallery
+    path: /gallery/
     controller: App\Controller\PageController::gallery
 
 book_create_page:
     path: /gallery/book/create
     controller: App\Controller\PageController::bookCreate
     
+book_edit_page:
+    path: /gallery/book/{id}/
+    controller: App\Controller\PageController::bookEdit
+    requirements:
+        id: '\d+'
+    
 book_create_handler:
-    path: /gallery/book/handler
+    path: /gallery/book/create/handler
     controller: App\Controller\BookController::bookHandler
+    methods: [POST]
     
 book_edit_handler:
-    path: /gallery/book/handler
+    path: /gallery/book/{id}/edit
     controller: App\Controller\BookController::bookHandler
+    methods: [POST]
+    
+book_delete_handler:
+    path: /gallery/book/{id}/delete
+    controller: App\Controller\BookController::bookDelete
+    methods: [GET]
     
 api_book_create:
     path: /api/v1/books/add
@@ -50,3 +63,7 @@ api_book_edit:
 api_books_get:
     path: /api/v1/books
     controller: App\Controller\BookController::apiGetBooks
+
+api_help:
+    path: /api/v1/help
+    controller: App\Controller\PageController::apiHelpPage

@@ -55,17 +55,19 @@ class Book
             $this->setCreatedAt(new \DateTime('now'));
 		}
 	}
+    
 	
 	/** 
+    * @ORM\PrePersist
 	* @ORM\PreRemove
 	*/
 	public function deleteFiles()
 	{
-        if ($this->getCover() == null) {
+        if ($this->getCover() != null) {
 		    unlink($this->getCover());
 		}
 		
-		if ($this->getLink() == null) {
+		if ($this->getLink() != null) {
 		    unlink($this->getLink());
 		}
 	}

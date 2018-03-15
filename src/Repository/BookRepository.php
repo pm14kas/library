@@ -18,6 +18,11 @@ class BookRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Book::class);
     }
+    
+    public function findAllOrderBy($field="read_at", $direction="DESC")
+    {
+        return $this->findBy(array(), array($field => $direction));
+    }
 
     /*
     public function findBySomething($value)

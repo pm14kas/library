@@ -1,0 +1,10 @@
+{% extends "base.html.twig" %}
+{% block title %}Справка{% endblock %}
+{% block body %}
+    {{ parent() }}
+    <p>{{ path("api_books_get") }} - GET method to get all books</p>
+    <p>{{ path("api_book_create") }} - GET method to add a book (supply with name, author and completion date)</p>
+    <p>{{ path("api_book_edit", {"id": "1"}) }} - GET method to edit a book (supply with id, name, author and completion date)</p>
+    <p>current api key: {{ api_key }}</p>
+<a href="{{ path('gallery') }}">Go to library</a>
+{% endblock %}

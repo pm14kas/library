@@ -17,7 +17,7 @@ use App\Entity\Book;
 class BookController extends Controller
 {
 	
-	public function bookHandler(Request $request)
+	public function bookHandler(Request $request, $id=null)
     {
 		try
 		{	
@@ -32,15 +32,15 @@ class BookController extends Controller
 			}
 
 			$manager = $this->getDoctrine()->getManager();
-			
-			if (!$request->get("id")) {
+			 
+			if ($id==null) {
 				$book = new Book();
 			}
 			else {
                 $book = $this->getDoctrine()->getRepository(Book::class)->find($id);
-				if (!book) {
+				if (!$book) {
 					throw new AccessDeniedException("id");
-				}
+				};
 			}
 
 			$book->setName($request->get("name"));
@@ -54,43 +54,24 @@ class BookController extends Controller
                 }
             }
 			    
-			if (!$request->files->get("cover") or !$request->file("localFile")->isValid()) {
+			if (!($request->files->get("cover")/* and $request->files->get("cover")->isValid()*/)) {
 				$book->setCover(null);
 			}
 			else {	
-				$file = $request->file->input("cover");
-				//if ($file->
-				$ext = $file->getClientOriginalExtension();
-				$mime = $file->getMimeType();
-				$name = time().substr(microtime(), 2, 3);
+				$file = $request->files->get("cover");
+                $filename = time().substr(microtime(), 2, 3).'.'.$file->guessExtension();
 				
-				$typeok = TRUE;
-				switch($mime)
-				{
-					case "image/gif":
-					case "image/jpeg": 
-					case "image/pjpeg":
-					case "image/png": break;
-					default: $typeok = FALSE; break;
-				}
-				if ($typeok)
-				{
-					$file->move($this->makePath()."images/upload/", $name.".".$ext);
-					return json_encode(["response"=>"ok", "code"=>"200", "message" => "Success", "url" => url("/")."/images/upload/".$name.".".$ext]);
-				}
-                //upload image, check if it is valid, rename to current_timestamp
-				//then put global link to db like "http://mysite/uploads/covers/156727378992000.jpg"
-				//docs on symfony upload http://symfony.com/doc/current/controller/upload_file.html
+				$file->move("./upload/cover/", $filename);
+                $book->setCover("upload/cover/".$filename);
 			}
 			
 			if (!$request->files->get("file")) {
 				$book->setLink(null);
 			}
 			else {
-				//upload file, check if it is valid, rename to current_timestamp
-				//then put global link to db like "http://mysite/uploads/files/156727378992640.pdf"
-				//docs on symfony upload http://symfony.com/doc/current/controller/upload_file.html
-			}
+                
+            }
+			
 
 			$manager->persist($book);
 
@@ -100,13 +81,31 @@ class BookController extends Controller
 		}
 		catch(AccessDeniedException $e)
 		{
-			return $this-> redirect($this->generateUrl("book_create_page", ["error" => $e->getMessage()]));
+            if ($id==null) {
+                return $this-> redirect($this->generateUrl("book_create_page", ["error" => $e->getMessage()]));
+            }
+            else if ($e->getMessage()==="id") { //in case of invalid id
+                 return $this-> redirect($this->generateUrl("gallery"));
+            }
+            else {
+                $book = $this->getDoctrine()->getRepository(Book::class)->find($id);
+                return $this-> redirect($this->generateUrl("book_edit_page", ["error" => $e->getMessage(), "id" => $id, "book" => $book]));
+            }
 		}
     }
 	
-	
-	
-	
+	public function bookDelete($id)
+    {
+        if ($id) {
+            $manager = $this->getDoctrine()->getManager();
+            $book = $this->getDoctrine()->getRepository(Book::class)->find($id);
+            if ($book) {
+                $manager->remove($book);
+                $manager->flush();
+            }
+        }
+        return $this->redirect($this->generateUrl("gallery"));
+    }
 	
 	
 	
@@ -168,12 +167,18 @@ class BookController extends Controller
 			$manager = $this->getDoctrine()->getManager();
 			
 			$book = $this->getDoctrine()->getRepository(Book::class)->find($id);
-			if (!book) {
+			if (!$book) {
                 throw new AccessDeniedException("Invalid book ID");
 			}
 			$book->setName($request->get("name"));
 			$book->setAuthor($request->get("author"));
-			$book->setReadAt($request->get("read_at"));
+			$book->setReadAt(\DateTime::createFromFormat("Y-m-d", $request->get("read_at")));
+            if ($book->getReadAt()==false) {
+                $book->setReadAt(\DateTime::createFromFormat("m-d-Y", $request->get("read_at")));
+                if ($book->getReadAt()==false) {
+                    throw new AccessDeniedException("Invalid completion date");
+                }
+            }
 
 			$manager->persist($book);
 
@@ -217,8 +222,14 @@ class BookController extends Controller
 			$book = new Book();
 			$book->setName($request->get("name"));
 			$book->setAuthor($request->get("author"));
-			$book->setReadAt($request->get("read_at"));
-
+			$book->setReadAt(\DateTime::createFromFormat("Y-m-d", $request->get("read_at")));
+            
+            if ($book->getReadAt()==false) {
+                $book->setReadAt(\DateTime::createFromFormat("m-d-Y", $request->get("read_at")));
+                if ($book->getReadAt()==false) {
+                    throw new AccessDeniedException("Invalid completion date");
+                }
+            }
 			$manager->persist($book);
 
 			$manager->flush();

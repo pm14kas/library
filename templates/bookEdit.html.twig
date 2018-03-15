@@ -2,16 +2,28 @@
 {% block title %}Book gallery{% endblock %}
 {% block body %}
     {{ parent() }}
-	{% for book in bookList %}
-		<div>
-			<div>
-				<p>
-					<span>{{ book.name }}<span> by <span>{{ book.author}}</span>
-				</p>
-				<div>
-					<img src="{{ book.cover }}" />
-				</div>
-			</div>
-		</div>
-	{% endfor %}
+    
+	<form method="post" action="{{ path("book_edit_handler", {"id": book.id}) }}" enctype="multipart/form-data" >
+                {% if ((error is defined) and (error=="name")) %}
+                    <p style="color:red">Book title is missing!</p>
+                {% elseif ((error is defined) and (error=="author")) %}
+                    <p style="color:red">Author is missing!</p>
+                {% elseif ((error is defined) and (error=="read_at")) %}
+                    <p style="color:red">Completion date is wrong or missing!</p>
+                {% endif %}
+        
+		<p>Book title</p>
+        <input name="name" {% if (book.name is defined) %} value="{{ book.name }}" {% endif %} /><br>
+		<p>Author</p>
+		<input name="author" {% if (book.author is defined) %} value="{{ book.author }}" {% endif %} /><br>
+		<p>Picture of book cover</p>
+		<input type="file" name="cover" /><br>
+		<p>Book file (leave blank if not available)</p>
+		<input type="file" name="file" /><br>
+		<p>Completion date (leave blank if not available)</p>
+		<input type="date" name="read_at" {% if (book.readat is defined) %} value="{{ book.readat }}" {% endif %} /><br>
+        {% if (book.readat is defined) %} <p>{{ book.readat }}</p> {% endif %}
+		<input type="submit" name="Edit" />
+        <p><a href="{{ path("book_delete_handler", {"id":book.id}) }}">Delete book</a></p>
+    </form>
 {% endblock %}

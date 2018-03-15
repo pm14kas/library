@@ -2,20 +2,24 @@
 {% block title %}Book gallery{% endblock %}
 {% block body %}
     {{ parent() }}
+    <p><a href="{{ path('index') }}">Go back to index page</a></p>
     {% if (user) %}
-        <a href="{{ path('book_create_page') }}">Add new book</a>
+        <p><a href="{{ path('book_create_page') }}">Add new book</a></p>
     {% endif %}
     
 	{% for book in bookList %}
-		<div>
+		<div style="border: 1px solid black;">
 			<div>
 				<p>
 					<span>{{ book.name }}<span> by <span>{{ book.author}}</span>
 				</p>
 				<div>
-					<img src="{{ book.cover }}" />
+					<img src="{{ [path("index"),book.cover]|join("") }}" />
 				</div>
 			</div>
+            {% if (user) %}
+                <a href="{{ path('book_edit_page', {"id":book.id}) }}">Edit book</a>
+            {% endif %}
 		</div>
 	{% endfor %}
 {% endblock %}
