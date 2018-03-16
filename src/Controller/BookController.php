@@ -54,10 +54,12 @@ class BookController extends Controller
                 }
             }
 			    
-			if (!($request->files->get("cover")/* and $request->files->get("cover")->isValid()*/)) {
-				$book->setCover(null);
+			if (!($request->files->get("cover") and $request->files->get("cover")->isValid() and ($request->files->get("cover")->getClientSize() < 5*1024*1024))) {
+				if ($id==null) {
+                    $book->setCover(null);
+                }
 			}
-			else {	
+			else {
 				$file = $request->files->get("cover");
                 $filename = time().substr(microtime(), 2, 3).'.'.$file->guessExtension();
 				
@@ -65,13 +67,25 @@ class BookController extends Controller
                 $book->setCover("upload/cover/".$filename);
 			}
 			
-			if (!$request->files->get("file")) {
-				$book->setLink(null);
+			if (!($request->files->get("file") and $request->files->get("file")->isValid() and ($request->files->get("file")->getClientSize() < 5*1024*1024))) {
+				if ($id==null) {
+                    $book->setFile(null);
+                }
 			}
 			else {
-                
+                $file = $request->files->get("file");
+                $filename = time().substr(microtime(), 2, 3).'.'.$file->guessExtension();
+				
+				$file->move("./upload/file/", $filename);
+                $book->setFile("upload/file/".$filename);
             }
 			
+			if ($request->get("allowed")) {
+				$book->setAllowed($request->get("allowed"));
+			}
+			else {
+				$book->setAllowed(false);
+			}
 
 			$manager->persist($book);
 
@@ -82,7 +96,7 @@ class BookController extends Controller
 		catch(AccessDeniedException $e)
 		{
             if ($id==null) {
-                return $this-> redirect($this->generateUrl("book_create_page", ["error" => $e->getMessage()]));
+                return $this->redirect($this->generateUrl("book_create_page", ["error" => $e->getMessage()]));
             }
             else if ($e->getMessage()==="id") { //in case of invalid id
                  return $this-> redirect($this->generateUrl("gallery"));
@@ -127,7 +141,22 @@ class BookController extends Controller
                 throw new AccessDeniedException("Wrong API key");
             }
             
-            $bookList = $this->getDoctrine()->getRepository(Book::class)->findAll();
+            $bookList = $this->getDoctrine()->getRepository(Book::class)->findAllOrderBy("read_at");
+            $addition = $request->getSchemeAndHttpHost();
+            if ($addition[strlen($addition)-1]!="/") {
+                $addition = $addition."/";
+            }
+            foreach($bookList as &$book) {
+                if ($book->getCover()) {
+                    $book->setCover($addition.$book->getCover());
+                }
+                if ($book->getFile() and ($book->getAllowed())) {
+                    $book->setFile($addition.$book->getFile());
+                }
+                else {
+                    $book->setFile(null);
+                }
+            }
             $json = $serializer->serialize($bookList, "json");
             return new Response($json);
         }
@@ -150,35 +179,33 @@ class BookController extends Controller
                 throw new AccessDeniedException("Wrong API key");
             }
             
-			if (!$request->get("name")) {
-                throw new AccessDeniedException("No name provided");
-			}
-			if (!$request->get("author")) {
-                throw new AccessDeniedException("No author's name provided");
-			}
-			if (!$request->get("read_at")) {
-                throw new AccessDeniedException("No completion date provided");
-			}
-			if (!$request->get("api_key")) {
-                throw new AccessDeniedException("No API key provided");
-			}
-            
-
 			$manager = $this->getDoctrine()->getManager();
 			
 			$book = $this->getDoctrine()->getRepository(Book::class)->find($id);
 			if (!$book) {
                 throw new AccessDeniedException("Invalid book ID");
 			}
-			$book->setName($request->get("name"));
-			$book->setAuthor($request->get("author"));
-			$book->setReadAt(\DateTime::createFromFormat("Y-m-d", $request->get("read_at")));
-            if ($book->getReadAt()==false) {
-                $book->setReadAt(\DateTime::createFromFormat("m-d-Y", $request->get("read_at")));
-                if ($book->getReadAt()==false) {
-                    throw new AccessDeniedException("Invalid completion date");
-                }
-            }
+			if ($request->get("name")) {
+				$book->setName($request->get("name"));
+			}
+			
+			if ($request->get("author")) {
+				$book->setAuthor($request->get("author"));
+			}
+			
+			if ($request->get("read_at")) {
+				$book->setReadAt(\DateTime::createFromFormat("Y-m-d", $request->get("read_at")));
+				if ($book->getReadAt()==false) {
+					$book->setReadAt(\DateTime::createFromFormat("m-d-Y", $request->get("read_at")));
+					if ($book->getReadAt()==false) {
+						throw new AccessDeniedException("Invalid completion date");
+					}
+				}
+			}
+			
+			if ($request->get("allowed")) {
+				$book->setAllowed($request->get("allowed"));
+			}
 
 			$manager->persist($book);
 
@@ -230,6 +257,14 @@ class BookController extends Controller
                     throw new AccessDeniedException("Invalid completion date");
                 }
             }
+			
+			if ($request->get("allowed")) {
+				$book->setAllowed($request->get("allowed"));
+			}
+			else {
+				$book->setAllowed(false);
+			}
+			
 			$manager->persist($book);
 
 			$manager->flush();

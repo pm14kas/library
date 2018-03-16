@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
@@ -23,11 +24,22 @@ class Book
     /** @ORM\Column(type="string", length=255) */
 	private $author;
 
-    /** @ORM\Column(type="string", nullable=true, length=255) */
+    /**
+	* @ORM\Column(type="string", nullable=true, length=255) 
+	* @Assert\NotBlank(message="Upload the book cover")
+	* @Assert\File(mimeTypes={ "image/png", "image/jpeg", "image/gif" }, maxSize="5242880")
+	*/
 	private $cover = null;
 
-    /** @ORM\Column(type="string", nullable=true, length=255) */
-	private $link = null;
+    /**
+	* @ORM\Column(type="string", nullable=true, length=255) 
+	* @Assert\NotBlank(message="Upload the book file")
+	* @Assert\File(maxSize="5242880")
+	*/
+	private $file = null;
+	
+	/** @ORM\Column(type="boolean", options={"default": false}) */
+	private $allowed;
 
 	/** @ORM\Column(type="datetime") */
 	private $read_at;
@@ -67,8 +79,8 @@ class Book
 		    unlink($this->getCover());
 		}
 		
-		if ($this->getLink() != null) {
-		    unlink($this->getLink());
+		if ($this->getFile() != null) {
+		    unlink($this->getFile());
 		}
 	}
 
@@ -116,14 +128,24 @@ class Book
 	}	
 
 
-	public function getLink()
+	public function getFile()
 	{
-		return $this->link;
+		return $this->file;
 	}	
 
-	public function setLink($_link)
+	public function setFile($_file)
 	{
-		$this->link = $_link;
+		$this->file = $_file;
+	}	
+
+	public function getAllowed()
+	{
+		return $this->allowed;
+	}	
+
+	public function setAllowed($_allowed)
+	{
+		$this->allowed = $_allowed;
 	}	
     
     

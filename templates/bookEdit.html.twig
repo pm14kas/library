@@ -2,7 +2,7 @@
 {% block title %}Book gallery{% endblock %}
 {% block body %}
     {{ parent() }}
-    
+    <p><a href="{{ path('gallery') }}">Go back to gallery page</a></p>
 	<form method="post" action="{{ path("book_edit_handler", {"id": book.id}) }}" enctype="multipart/form-data" >
                 {% if ((error is defined) and (error=="name")) %}
                     <p style="color:red">Book title is missing!</p>
@@ -17,9 +17,17 @@
 		<p>Author</p>
 		<input name="author" {% if (book.author is defined) %} value="{{ book.author }}" {% endif %} /><br>
 		<p>Picture of book cover</p>
+        {% if (book.cover is not null) %} 
+            <p style="color:gray">File already exists</p> 
+            {{ show_image([path("index"),book.cover]|join(""),100,100) }}
+            <br>
+        {% endif %}
 		<input type="file" name="cover" /><br>
 		<p>Book file (leave blank if not available)</p>
+        {% if (book.file is not null) %} <p style="color:gray">File already exists</p> {% endif %}
 		<input type="file" name="file" /><br>
+		<p>Allow file download for unathorized users</p>
+		<input type="checkbox" name="allowed" {% if ((book.allowed is defined) and (book.allowed==true)) %} checked {% endif %} /><br>
 		<p>Completion date (leave blank if not available)</p>
 		<input type="date" name="read_at" {% if (book.readat is defined) %} value="{{ book.readat }}" {% endif %} /><br>
         {% if (book.readat is defined) %} <p>{{ book.readat }}</p> {% endif %}

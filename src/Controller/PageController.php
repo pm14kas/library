@@ -19,10 +19,24 @@ class PageController extends Controller
          return $this->render('apiHelp.html.twig', ["api_key" => $this->getParameter("api_key")]);
     }
 
-    public function gallery()
+    public function gallery(Request $request)
     {
-        $bookList = $this->getDoctrine()->getRepository(Book::class)->findAllOrderBy("updated_at");
-
+        $bookList = $this->getDoctrine()->getRepository(Book::class)->findAllOrderBy("read_at");
+        $addition = $request->getSchemeAndHttpHost();
+        if ($addition[strlen($addition)-1]!="/") {
+            $addition = $addition."/";
+        }
+		foreach($bookList as &$book) {
+            if ($book->getCover()) {
+                $book->setCover($addition.$book->getCover());
+            }
+			if ($book->getFile() and ($book->getAllowed() or $this->getUser())) {
+				$book->setFile($addition.$book->getFile());
+			}
+			else {
+				$book->setFile(null);
+			}
+		}
         return $this->render("gallery.html.twig", ["bookList" => $bookList, "user" => $this->getUser()]);
     }
     

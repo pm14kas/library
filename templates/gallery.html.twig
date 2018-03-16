@@ -14,11 +14,18 @@
 					<span>{{ book.name }}<span> by <span>{{ book.author}}</span>
 				</p>
 				<div>
-					<img src="{{ [path("index"),book.cover]|join("") }}" />
+                    {% if (book.cover is null) %}  
+                        <p>No Image provided</p>
+                    {% else %}
+                        {{ show_image(book.cover,200,200) }}
+                    {% endif %}
 				</div>
 			</div>
             {% if (user) %}
                 <a href="{{ path('book_edit_page', {"id":book.id}) }}">Edit book</a>
+            {% endif %}
+            {% if ((book.allowed) and (book.file)) %}
+                <a href="{{ book.file }}">Download book</a>
             {% endif %}
 		</div>
 	{% endfor %}
