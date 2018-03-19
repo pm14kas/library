@@ -17,6 +17,9 @@ class BookController extends Controller
     public function bookHandler(Request $request, $id = null)
     {
         try {
+            /** Validation section
+             *
+             */
             if (!$request->get("name")) {
                 throw new AccessDeniedException("name");
             }
@@ -38,6 +41,9 @@ class BookController extends Controller
                 }
             }
 
+            
+            
+            
             $book->setName($request->get("name"));
             $book->setAuthor($request->get("author"));
 
@@ -56,17 +62,20 @@ class BookController extends Controller
                 
                 $book->setCover(null);
             }
-                
-            if (!(
-                    $request->files->get("cover") and
-                    $request->files->get("cover")->isValid() and
-                    ($request->files->get("cover")->getClientSize() < 5*1024*1024)
-                
-            )
-            ) {
+            
+            
+            /** Cover section
+             *
+             */
+            
+            if (!($request->files->get("cover"))) {
                 if ($id==null) {
                     $book->setCover(null);
                 }
+            } elseif (!($request->files->get("cover")->isValid() and
+                    $request->files->get("cover")->getClientSize() < 5*1024*1024)
+                    ) {
+                throw new AccessDeniedException("cover");
             } else {
                 $file = $request->files->get("cover");
                 $filename = time().substr(microtime(), 2, 3).'.'.$file->guessExtension();
@@ -75,6 +84,8 @@ class BookController extends Controller
                     unlink($book->getCover());
                 }
                 
+                //Удаляеят файлы обложки в случае ее изменения
+                //в сабскрайбере или lifecycle callback это не реализовать (?)
                 $file->move("./upload/cover/", $filename);
                 $book->setCover("upload/cover/".$filename);
             }
@@ -87,14 +98,22 @@ class BookController extends Controller
                 $book->setFile(null);
             }
             
-            if (!($request->files->get("file") and $request->files->get("file")->isValid())) {
+            
+            
+            /** File section
+             *
+             */
+            if (!($request->files->get("file"))) {
                 if ($id==null) {
                     $book->setFile(null);
                 }
+            } elseif (!($request->files->get("file")->isValid() and
+                    $request->files->get("file")->getClientSize() < 5*1024*1024)
+                    ) {
+                throw new AccessDeniedException("file");
             } else {
                 $file = $request->files->get("file");
                 $filename = time().substr(microtime(), 2, 3).'.'.$file->guessExtension();
-                //return new Response($filename);
                 if (file_exists($book->getFile())) {
                     unlink($book->getFile());
                 }
@@ -110,14 +129,12 @@ class BookController extends Controller
             }
 
             $manager->persist($book);
-
             $manager->flush();
-            
             return $this->redirect($this->generateUrl("gallery"));
         } catch (AccessDeniedException $e) {
             if ($id==null) {
                 return $this->redirect($this->generateUrl("book_create_page", ["error" => $e->getMessage()]));
-            } elseif ($e->getMessage()==="id") {//in case of invalid id
+            } elseif ($e->getMessage()==="id") {
                 return $this-> redirect($this->generateUrl("gallery"));
             } else {
                 $book = $this->getDoctrine()->getRepository(Book::class)->find($id);
@@ -224,7 +241,6 @@ class BookController extends Controller
             }
 
             $manager->persist($book);
-
             $manager->flush();
             
             $json = $serializer->serialize(["result" => "ok", "message" => $book->getId()], "json");

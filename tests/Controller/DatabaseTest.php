@@ -3,58 +3,79 @@
 namespace App\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\BrowserKit\Cookie;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\DomCrawler\Crawler;
 
-
-use App\Repository\UserRepository;
-use App\Repository\BookRepository;
-use App\Entity\Book;
-
-class DatabaseTest extends KernelTestCase
+class DatabaseTest extends WebTestCase
 {
-    
-    protected $_em;
-
-    protected function setUp()
+    private function auth($client)
     {
-        /*$reader = new AnnotationReader();
-        $reader->setIgnoreNotImportedAnnotations(true);
-        $reader->setEnableParsePhpImports(true);
-
-        $metadataDriver = new AnnotationDriver(
-            $reader, "App\\Entity"
-        );
-
-        $this->_em = $this->_getTestEntityManager();
-
-        $this->_em->getConfiguration()
-            ->setMetadataDriverImpl($metadataDriver);
-
-        $this->_em->getConfiguration()->setEntityNamespaces(array(
-            'App' => 'App\\Entity'));*/
+        $crawler = $client->request('GET', '/login');
+        $form = $crawler->selectButton("Login")->form(array(
+            "_username"  => "test",
+            "_password"  => "test",
+            ));
+        $client->submit($form);
+        $this->assertTrue($client->getResponse()->isRedirect());
+        $client->followRedirect();
+        return $client;
     }
     
-    public function testSubscriber()
+    public function testTruncate()
     {
-       /* $em = $this->getMockBuilder('stdClass')
-                 ->setMethods(array('persist'))
-                 ->getMock();
+        $client = static::createClient();
+        $client = $this->auth($client);
+        
+        $client->request("GET", "/api/v1/books?api_key=VALIDAPIKEY");
+        $response = json_decode($client->getResponse()->getContent());
+        foreach ($response->books as $book) {
+            $client->request("GET", "/gallery/book/".$book->id."/delete");
+        }
+        
+        $client->request("GET", "/api/v1/books?api_key=VALIDAPIKEY");
+        $response = json_decode($client->getResponse()->getContent());
+        $count_new = count($response->books);
+        $this->assertEquals(0, $count_new);
+    }
+    
+    
+    public function testBookFileDeletion()
+    {
+        $client = static::createClient();
+        
+        $client = $this->auth($client);
 
-        $em->expects($this->once())
-                 ->method('persist')
-                 ->with($this->isInstanceOf('Book'));
-
-        $event = $this->getMockBuilder('stdClass')
-                 ->setMethods(array('getEm'))
-                 ->getMock();
-
-        $event->expects($this->once())
-                 ->method('getEm')
-                 ->will($this->returnValue($em));
-
-        $listener = new BookRepository();
-        $listener->postPersist($event);
-        */
-        $this->assertEquals(200, 200);
+        $crawler = $client->request("GET", "/gallery/book/create");
+        $form = $crawler->selectButton("Create book")->form(array(
+            "name"  => "LEGITBOOK",
+            "author"  => "LEGITAUTHOR",
+            "read_at"  => "2010-01-01",
+            ));
+        $form["cover"]->upload("tests/TestFiles/cover.jpeg");
+        $form["file"]->upload("tests/TestFiles/book.pdf");
+        $form["allowed"]->tick();
+        $client->submit($form);
+        $crawler = $client->followRedirect();
+        
+        $client->request("GET", "/api/v1/books?api_key=VALIDAPIKEY");
+        $response = json_decode($client->getResponse()->getContent());
+        $book = $response->books[0];
+        
+        $cover = substr($book->cover, 1+strrpos($book->cover, "/"));
+        $file = substr($book->file, 1+strrpos($book->file, "/"));
+        
+        $this->assertTrue(file_exists("./upload/cover/".$cover));
+        $this->assertTrue(file_exists("./upload/file/".$file));
+        
+        $client->request("GET", "/gallery/book/".$book->id."/delete");
+        
+                
+        $this->assertTrue(!file_exists("./upload/cover/".$cover));
+        $this->assertTrue(!file_exists("./upload/file/".$file));
+        
+        rmdir("./upload/cover/");
+        rmdir("./upload/file/");
+        rmdir("./upload/");
     }
 }

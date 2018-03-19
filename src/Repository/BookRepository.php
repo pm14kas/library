@@ -24,7 +24,6 @@ class BookRepository extends ServiceEntityRepository
     {
         //return $this->findBy(array(), array($field => $direction));
         return $this->createQueryBuilder('book')
-            ->where('1=1')
             ->orderBy('book.read_at', 'DESC')
             ->getQuery()
             ->useQueryCache(true)
@@ -33,7 +32,6 @@ class BookRepository extends ServiceEntityRepository
             ->setResultCacheLifetime(86400)
             ->getResult()
         ;
-        
     }
 
     /*

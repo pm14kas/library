@@ -6,10 +6,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\DomCrawler\Crawler;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-
-use App\Repository\UserRepository;
-use App\Entity\User;
 
 class FormTest extends WebTestCase
 {
@@ -27,7 +23,7 @@ class FormTest extends WebTestCase
         $form = $crawler->selectButton("Login")->form(array(
             "_username"  => "test",
             "_password"  => "test",
-            ));     
+            ));
         $client->submit($form);
         
         $this->assertTrue($client->getResponse()->isRedirect());
@@ -39,7 +35,7 @@ class FormTest extends WebTestCase
             "name"  => "LEGITBOOK",
             "author"  => "LEGITAUTHOR",
             "read_at"  => "2010-01-01",
-            ));     
+            ));
         $client->submit($form);
         
         $client->request("GET", "/api/v1/books?api_key=VALIDAPIKEY");
@@ -64,5 +60,4 @@ class FormTest extends WebTestCase
         $count_new = count($response->books);
         $this->assertEquals($count_old, $count_new);
     }
-    
 }

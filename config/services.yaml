@@ -3,6 +3,7 @@
 parameters:
     locale: 'en'
     api_key: '%env(resolve:API_KEY)%'
+    public_folder: '%kernel.root_dir%/../'
 
 
 services:

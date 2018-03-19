@@ -10,12 +10,12 @@ class PageController extends Controller
 {
     public function index()
     {
-         return $this->render('index.html.twig', ["user" => $this->getUser()]);
+        return $this->render('index.html.twig', ["user" => $this->getUser()]);
     }
     
     public function apiHelpPage()
     {
-         return $this->render('apiHelp.html.twig', ["api_key" => $this->getParameter("api_key")]);
+        return $this->render('apiHelp.html.twig', ["api_key" => $this->getParameter("api_key")]);
     }
 
     public function gallery(Request $request)
@@ -25,25 +25,24 @@ class PageController extends Controller
         if ($addition[strlen($addition)-1]!="/") {
             $addition = $addition."/";
         }
-		foreach($bookList as &$book) {
+        foreach ($bookList as &$book) {
             if ($book->getCover()) {
                 $book->setCover($addition.$book->getCover());
             }
-			if ($book->getFile() and ($book->getAllowed() or $this->getUser())) {
-				$book->setFile($addition.$book->getFile());
-			}
-			else {
-				$book->setFile(null);
-			}
-		}
+            if ($book->getFile() and ($book->getAllowed() or $this->getUser())) {
+                $book->setFile($addition.$book->getFile());
+            } else {
+                $book->setFile(null);
+            }
+        }
         return $this->render("gallery.html.twig", ["bookList" => $bookList, "user" => $this->getUser()]);
     }
     
     public function bookCreate(Request $request)
     {
-       // if ($this->getUser())
-       // {
-            return $this->render("bookCreate.html.twig", ["user" => $this->getUser(), "error" => $request->get("error")]);
+        // if ($this->getUser())
+        // {
+        return $this->render("bookCreate.html.twig", ["user" => $this->getUser(), "error" => $request->get("error")]);
         //}
         //else {
         //    return $this->redirect($this->generateUrl("index"));
@@ -53,15 +52,15 @@ class PageController extends Controller
         
     public function bookEdit($id, Request $request)
     {
-       // if ($this->getUser())
+        // if ($this->getUser())
         //{
-			$book = $this->getDoctrine()->getRepository(Book::class)->find($id);
-			if (!$book) {
-                throw $this->createNotFoundException('Book is not found');
-			}
-            $book->setReadAt($book->getReadAt()->format("Y-m-d"));
-            return $this->render("bookEdit.html.twig", ["book" => $book, "error" => $request->get("error")]);
-       // }
+        $book = $this->getDoctrine()->getRepository(Book::class)->find($id);
+        if (!$book) {
+            throw $this->createNotFoundException('Book is not found');
+        }
+        $book->setReadAt($book->getReadAt()->format("Y-m-d"));
+        return $this->render("bookEdit.html.twig", ["book" => $book, "error" => $request->get("error")]);
+        // }
        // else {
         //    return $this->redirect($this->generateUrl("index"));
         //}

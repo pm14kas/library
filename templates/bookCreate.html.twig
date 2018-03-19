@@ -11,6 +11,10 @@
                     <p style="color:red">Author is missing!</p>
                 {% elseif ((error is defined) and (error=="read_at")) %}
                     <p style="color:red">Completion date is wrong or missing!</p>
+                {% elseif ((error is defined) and (error=="cover")) %}
+                    <p style="color:red">Invalid cover image!</p>
+                {% elseif ((error is defined) and (error=="file")) %}
+                    <p style="color:red">Invalid book file!</p>
                 {% endif %}
 		<p>Book title</p>
 		<input id="name" name="name" /><br>

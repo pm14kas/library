@@ -4,8 +4,8 @@ namespace App\Twig;
 use Twig_Extension;
 use \Twig_SimpleFunction;
 
-class ThumbnailExtension extends Twig_Extension {
-
+class ThumbnailExtension extends Twig_Extension
+{
     public function getName()
     {
         return 'thumbnail_extension';
@@ -30,5 +30,4 @@ class ThumbnailExtension extends Twig_Extension {
         //return ("<img style=\"width: ".$width."px; height: ".$height."px;\" src=\"".$source."\">");
         return ("<img width=\"".$width."\" height=\"".$height."\" src=\"".$source."\">");
     }
-
 }

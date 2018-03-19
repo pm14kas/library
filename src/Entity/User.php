@@ -18,9 +18,9 @@ class User extends BaseUser
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
-	
-	/** @ORM\Column(type="string", length=255, nullable=true) */
-	private $api_key=null;
+    
+    /** @ORM\Column(type="string", length=255, nullable=true) */
+    private $api_key=null;
 
 
     public function __construct()
@@ -28,14 +28,14 @@ class User extends BaseUser
         parent::__construct();
         // your own logic
     }
-	
-	public function getApiKey()
-	{
-		return $this->api_key;
-	}
-	
-	public function setApiKey($_api_key)
-	{
-		$this->api_key = $_api_key;
-	}
+    
+    public function getApiKey()
+    {
+        return $this->api_key;
+    }
+    
+    public function setApiKey($_api_key)
+    {
+        $this->api_key = $_api_key;
+    }
 }
