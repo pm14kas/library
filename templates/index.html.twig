@@ -3,7 +3,6 @@
 {% block body %}
     {{ parent() }}
 <a href="{{ path('fos_user_security_login') }}">Login</a>
-<a href="{{ path('fos_user_registration_register') }}">Register</a>
 
 {% if (user) %}
 	<p>You are currently logged in as {{user}}</p>

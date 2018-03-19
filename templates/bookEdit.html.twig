@@ -22,10 +22,12 @@
             {{ show_image([path("index"),book.cover]|join(""),100,100) }}
             <br>
         {% endif %}
-		<input type="file" name="cover" /><br>
+		<input type="file" name="cover" />
+        <input type="checkbox" name="remove_cover" /><span>Remove cover</span><br>
 		<p>Book file (leave blank if not available)</p>
         {% if (book.file is not null) %} <p style="color:gray">File already exists</p> {% endif %}
-		<input type="file" name="file" /><br>
+		<input type="file" name="file" />
+        <input type="checkbox" name="remove_file" /><span>Remove file</span><br>
 		<p>Allow file download for unathorized users</p>
 		<input type="checkbox" name="allowed" {% if ((book.allowed is defined) and (book.allowed==true)) %} checked {% endif %} /><br>
 		<p>Completion date (leave blank if not available)</p>

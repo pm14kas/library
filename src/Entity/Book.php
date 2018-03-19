@@ -8,6 +8,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\BookRepository")
  * @ORM\HasLifecycleCallbacks
+ * @ORM\Cache(usage="NONSTRICT_READ_WRITE", region="my_region")
  */
 class Book
 {
@@ -70,16 +71,15 @@ class Book
     
 	
 	/** 
-    * @ORM\PrePersist
 	* @ORM\PreRemove
 	*/
 	public function deleteFiles()
 	{
-        if ($this->getCover() != null) {
+        if (($this->getCover() != null) and file_exists($this->getCover())) {
 		    unlink($this->getCover());
 		}
 		
-		if ($this->getFile() != null) {
+		if (($this->getFile() != null) and file_exists($this->getFile())) {
 		    unlink($this->getFile());
 		}
 	}

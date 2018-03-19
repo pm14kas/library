@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Book;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\Common\Cache\Cache;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -19,9 +20,20 @@ class BookRepository extends ServiceEntityRepository
         parent::__construct($registry, Book::class);
     }
     
-    public function findAllOrderBy($field="read_at", $direction="DESC")
+    public function findAllOrderBy(/*$field="read_at", $direction="DESC"*/)
     {
-        return $this->findBy(array(), array($field => $direction));
+        //return $this->findBy(array(), array($field => $direction));
+        return $this->createQueryBuilder('book')
+            ->where('1=1')
+            ->orderBy('book.read_at', 'DESC')
+            ->getQuery()
+            ->useQueryCache(true)
+            ->setQueryCacheLifetime(86400)
+            ->useResultCache(true)
+            ->setResultCacheLifetime(86400)
+            ->getResult()
+        ;
+        
     }
 
     /*

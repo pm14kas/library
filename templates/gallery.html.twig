@@ -8,25 +8,30 @@
     {% endif %}
     
 	{% for book in bookList %}
-		<div style="border: 1px solid black;">
+		<div style="border: 1px solid black;margin:5px; width: 200px; float:left;">
 			<div>
 				<p>
 					<span>{{ book.name }}<span> by <span>{{ book.author}}</span>
 				</p>
-				<div>
+				<div style="height:200px"> 
                     {% if (book.cover is null) %}  
-                        <p>No Image provided</p>
+                        <div style="background-color:gray; height:200px;">
+                            <p style="padding-top:calc(50% - 20px); color:white;font-size:20px">
+                                No Image Provided
+                            </p>
+                        </p>
                     {% else %}
                         {{ show_image(book.cover,200,200) }}
                     {% endif %}
 				</div>
 			</div>
             {% if (user) %}
-                <a href="{{ path('book_edit_page', {"id":book.id}) }}">Edit book</a>
+                <p><a href="{{ path('book_edit_page', {"id":book.id}) }}">Edit book</a></p>
             {% endif %}
             {% if ((book.allowed) and (book.file)) %}
-                <a href="{{ book.file }}">Download book</a>
+                <p><a href="{{ book.file }}">Download book</a></p>
             {% endif %}
 		</div>
 	{% endfor %}
+    <div style="clear:both"></div>
 {% endblock %}

@@ -1,0 +1,17 @@
+api_book_create:
+    path: /books/add
+    controller: App\Controller\BookController::apiAddBook
+
+api_book_edit:
+    path: /books/{id}/edit
+    controller: App\Controller\BookController::apiEditBook
+    requirements:
+        id: '\d+'
+
+api_books_get:
+    path: /books
+    controller: App\Controller\BookController::apiGetBooks
+
+api_help:
+    path: /help
+    controller: App\Controller\PageController::apiHelpPage

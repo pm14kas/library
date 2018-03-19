@@ -1,5 +1,4 @@
 <?php
-// src/Controller/LuckyController.php
 namespace App\Controller;
 
 use Symfony\Component\HttpFoundation\Response;
@@ -53,6 +52,14 @@ class BookController extends Controller
                     throw new AccessDeniedException("read_at");
                 }
             }
+            
+            if ($request->get("remove_cover")) {
+                if (file_exists($book->getCover())) {
+                    unlink($book->getCover());
+                }
+                
+                $book->setCover(null);
+            }
 			    
 			if (!($request->files->get("cover") and $request->files->get("cover")->isValid() and ($request->files->get("cover")->getClientSize() < 5*1024*1024))) {
 				if ($id==null) {
@@ -62,12 +69,24 @@ class BookController extends Controller
 			else {
 				$file = $request->files->get("cover");
                 $filename = time().substr(microtime(), 2, 3).'.'.$file->guessExtension();
-				
+                
+                if (file_exists($book->getCover())) {
+                    unlink($book->getCover());
+                }
+                
 				$file->move("./upload/cover/", $filename);
                 $book->setCover("upload/cover/".$filename);
 			}
+            
+            if ($request->get("remove_file")) {
+                if (file_exists($book->getFile())) {
+                    unlink($book->getFile());
+                }
+                
+                $book->setFile(null);
+            }
 			
-			if (!($request->files->get("file") and $request->files->get("file")->isValid() and ($request->files->get("file")->getClientSize() < 5*1024*1024))) {
+			if (!($request->files->get("file") and $request->files->get("file")->isValid())) {
 				if ($id==null) {
                     $book->setFile(null);
                 }
@@ -75,7 +94,11 @@ class BookController extends Controller
 			else {
                 $file = $request->files->get("file");
                 $filename = time().substr(microtime(), 2, 3).'.'.$file->guessExtension();
-				
+                //return new Response($filename);
+				if (file_exists($book->getFile())) {
+                    unlink($book->getFile());
+                }
+                
 				$file->move("./upload/file/", $filename);
                 $book->setFile("upload/file/".$filename);
             }
@@ -221,6 +244,7 @@ class BookController extends Controller
 		}
     }
 
+    
 	public function apiAddBook(Request $request)
 	{
 		$serializer = SerializerBuilder::create()->build();

@@ -8,15 +8,12 @@ use Doctrine\DBAL\Schema\Schema;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-class Version20180316054702 extends AbstractMigration
+class Version20180319081143 extends AbstractMigration
 {
     public function up(Schema $schema)
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
-        $this->addSql('ALTER TABLE book ADD allowed BOOLEAN DEFAULT \'false\' NOT NULL');
-        $this->addSql('ALTER TABLE book RENAME COLUMN link TO file');
     }
 
     public function down(Schema $schema)
@@ -25,7 +22,5 @@ class Version20180316054702 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'postgresql', 'Migration can only be executed safely on \'postgresql\'.');
 
         $this->addSql('CREATE SCHEMA public');
-        $this->addSql('ALTER TABLE book DROP allowed');
-        $this->addSql('ALTER TABLE book RENAME COLUMN file TO link');
     }
 }
