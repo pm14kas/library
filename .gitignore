@@ -66,6 +66,8 @@
 !var/SymfonyRequirements.php
 /public/build/fonts/glyphicons-*
 /public/build/images/glyphicons-*
+/public/upload/cover/*
+/public/upload/file/*
 
 ###> symfony/framework-bundle ###
 .env
@@ -86,3 +88,5 @@
 .php_cs
 .php_cs.cache
 ###< friendsofphp/php-cs-fixer ###
+/.netbeans/nbproject/private/
+/.netbeans/*
