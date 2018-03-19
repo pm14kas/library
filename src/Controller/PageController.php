@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Symfony\Component\HttpFoundation\Exception\NotFoundException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use App\Entity\Book;
@@ -42,29 +41,29 @@ class PageController extends Controller
     
     public function bookCreate(Request $request)
     {
-        if ($this->getUser())
-        {
+       // if ($this->getUser())
+       // {
             return $this->render("bookCreate.html.twig", ["user" => $this->getUser(), "error" => $request->get("error")]);
-        }
-        else {
-            return $this->redirect($this->generateUrl("index"));
-        }
+        //}
+        //else {
+        //    return $this->redirect($this->generateUrl("index"));
+        //}
     }
     
         
     public function bookEdit($id, Request $request)
     {
-        if ($this->getUser())
-        {
+       // if ($this->getUser())
+        //{
 			$book = $this->getDoctrine()->getRepository(Book::class)->find($id);
 			if (!$book) {
-                throw new NotFoundException();
+                throw $this->createNotFoundException('Book is not found');
 			}
             $book->setReadAt($book->getReadAt()->format("Y-m-d"));
             return $this->render("bookEdit.html.twig", ["book" => $book, "error" => $request->get("error")]);
-        }
-        else {
-            return $this->redirect($this->generateUrl("index"));
-        }
+       // }
+       // else {
+        //    return $this->redirect($this->generateUrl("index"));
+        //}
     }
 }

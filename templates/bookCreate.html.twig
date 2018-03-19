@@ -13,17 +13,17 @@
                     <p style="color:red">Completion date is wrong or missing!</p>
                 {% endif %}
 		<p>Book title</p>
-		<input name="name" /><br>
+		<input id="name" name="name" /><br>
 		<p>Author</p>
-		<input name="author" /><br>
+		<input id="author" name="author" /><br>
 		<p>Picture of book cover</p>
-		<input type="file" name="cover" /><br>
+		<input id="cover" type="file" name="cover" /><br>
 		<p>Book file (leave blank if not available)</p>
-		<input type="file" name="file" /><br>
+		<input id="file" type="file" name="file" /><br>
 		<p>Allow file download for unathorized users</p>
-		<input type="checkbox" name="allowed" /><br>
+		<input id="allowed" type="checkbox" name="allowed" /><br>
 		<p>Completion date (leave blank if not available)</p>
-		<input type="date" name="read_at" /><br>
-		<input type="submit" name="Send" />
+		<input id="read_at" type="date" name="read_at" /><br>
+		<input id="submit" type="submit" value="Create book" />
 	</form>
 {% endblock %}

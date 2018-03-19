@@ -33,7 +33,7 @@
 		<p>Completion date (leave blank if not available)</p>
 		<input type="date" name="read_at" {% if (book.readat is defined) %} value="{{ book.readat }}" {% endif %} /><br>
         {% if (book.readat is defined) %} <p>{{ book.readat }}</p> {% endif %}
-		<input type="submit" name="Edit" />
+		<input type="submit" value="Edit book" />
         <p><a href="{{ path("book_delete_handler", {"id":book.id}) }}">Delete book</a></p>
     </form>
 {% endblock %}
