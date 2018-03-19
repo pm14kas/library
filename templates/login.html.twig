@@ -2,7 +2,7 @@
 {% block title %}Book gallery{% endblock %}
 {% block body %}
     {{ parent() }}
-    <p><a href="{{ path('index') }}">Go back to index page</a></p>
+    <p><a href="{{ path("index") }}">Go back to index page</a></p>
     {% if error %}
 		<div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
 	{% endif %}

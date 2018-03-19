@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use App\Entity\User;
-use App\Entity\Book;
 
 
 class CreateUserCommand extends ContainerAwareCommand
@@ -38,11 +37,11 @@ class CreateUserCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $name = $input->getArgument('login');
-        $password = $input->getArgument('password');
-        $email = $input->getArgument('email');
+        $name = $input->getArgument("login");
+        $password = $input->getArgument("password");
+        $email = $input->getArgument("email");
 
-		$manager = $this->getContainer()->get('doctrine')->getManager();
+		$manager = $this->getContainer()->get("doctrine")->getManager();
         
         try 
         {

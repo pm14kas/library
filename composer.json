@@ -9,7 +9,9 @@
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/asset": "^3.4",
         "symfony/console": "^3.4",
+        "symfony/css-selector": "^3.4",
         "symfony/debug-pack": "*",
+        "symfony/dom-crawler": "^3.4",
         "symfony/dotenv": "^3.4",
         "symfony/expression-language": "^3.4",
         "symfony/finder": "^3.4",
@@ -32,7 +34,6 @@
     },
     "require-dev": {
         "symfony/browser-kit": "^3.4",
-        "symfony/css-selector": "^3.4",
         "symfony/profiler-pack": "*",
         "symfony/web-server-bundle": "^3.4"
     },

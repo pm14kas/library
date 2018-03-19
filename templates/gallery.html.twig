@@ -2,9 +2,9 @@
 {% block title %}Book gallery{% endblock %}
 {% block body %}
     {{ parent() }}
-    <p><a href="{{ path('index') }}">Go back to index page</a></p>
+    <p><a href="{{ path("index") }}">Go back to index page</a></p>
     {% if (user) %}
-        <p><a href="{{ path('book_create_page') }}">Add new book</a></p>
+        <p><a href="{{ path("book_create_page") }}">Add new book</a></p>
     {% endif %}
     
 	{% for book in bookList %}
@@ -19,14 +19,14 @@
                             <p style="padding-top:calc(50% - 20px); color:white;font-size:20px">
                                 No Image Provided
                             </p>
-                        </p>
+                        </div>
                     {% else %}
                         {{ show_image(book.cover,200,200) }}
                     {% endif %}
 				</div>
 			</div>
             {% if (user) %}
-                <p><a href="{{ path('book_edit_page', {"id":book.id}) }}">Edit book</a></p>
+                <p><a href="{{ path("book_edit_page", {"id":book.id}) }}">Edit book</a></p>
             {% endif %}
             {% if ((book.allowed) and (book.file)) %}
                 <p><a href="{{ book.file }}">Download book</a></p>

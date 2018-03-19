@@ -180,7 +180,7 @@ class BookController extends Controller
                     $book->setFile(null);
                 }
             }
-            $json = $serializer->serialize($bookList, "json");
+            $json = $serializer->serialize(["result" => "ok", "books" => $bookList], "json");
             return new Response($json);
         }
         catch(AccessDeniedException $e)
